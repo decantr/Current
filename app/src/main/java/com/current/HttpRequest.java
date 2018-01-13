@@ -103,17 +103,19 @@ public class HttpRequest extends AsyncTask<String,Void, Void>
         return null;
     }
 
-    public JSONObject getResultAsJSON() {
-        JSONObject jarr = null;
+    public JSONArray getResultAsJSON() {
+        JSONObject job;
+        JSONArray jar = null;
 
         if (!finished) return null;
 
         try {
-            jarr = new JSONObject(returnEntry);
+            job = new JSONObject(returnEntry);
+            jar = job.getJSONArray("articles");
         }
         catch (JSONException ex) {
             Log.d ("Output", "Error is " + ex.getMessage());
         }
-        return jarr;
+        return jar;
     }
 }

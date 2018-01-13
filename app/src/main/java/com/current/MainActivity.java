@@ -18,8 +18,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     Button btnPref, btnHome, btnFeed;
     HttpRequest task;
     TextView txtOut;
-    JSONObject jarr;
-//    JSONArray jarr;
+    JSONArray jar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,7 +58,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         if (task == null) {
             task = new HttpRequest();
-            task.execute("https://newsapi.org/v2/top-headlines?sources=techcrunch&apiKey=088fb1a3c9e3440db5b65f2c48c3f705");
+            task.execute("c");
         }
 
         if (v == btnHome) {
@@ -68,20 +67,20 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             txtOut.setText(str);
         }
         else if (v == btnFeed) {
-            JSONObject tmp;
+            JSONArray tmp;
             try {
-                jarr = task.getResultAsJSON();
+                jar = task.getResultAsJSON();
 
-                if (jarr == null) {
+                if (jar == null) {
                     txtOut.setText ("Still loading JSON");
                     return;
                 }
 
                 str = "";
 
-                for (int i = 0; i < jarr.length(); i++) {
-                    tmp = jarr.getJSONObject(i);
-                    str += tmp.getString ("name") + "\n";
+                for (int i = 0; i < jar.length(); i++) {
+                    tmp = jar.getJSONArray(i);
+                    str += tmp.getString(i) + "\n";
 
                 }
                 txtOut.setText(str);
