@@ -75,15 +75,8 @@ public class HttpRequest extends AsyncTask<String,Void, Void>
         return re;
     }
 
-    public JSONArray getResultAsJSON() {
-        JSONArray j = null;
-
-        try {
-            if (fi) j = new JSONObject(re).getJSONArray("articles");
-        } catch (JSONException e) {
-            Log.d ("Output", "Error is " + e.getMessage());
-        }
-        return j;
+    JSONArray getResultAsJSON() throws JSONException {
+        return fi ? new JSONObject(re).getJSONArray("articles") : null;
     }
 
     @Override

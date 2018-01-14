@@ -1,11 +1,10 @@
 package com.current;
 
 import android.content.Intent;
-import android.graphics.drawable.Drawable;
-import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.method.ScrollingMovementMethod;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -17,18 +16,13 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.InputStream;
-import java.net.URI;
-import java.net.URL;
-
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
-    Button btnPref, btnHome, btnFeed;
-    ImageView img;
-    TextView txtOut;
-    HttpRequest r;
-    JSONArray j;
-    int c;
+    private Button btnPref, btnHome, btnFeed;
+    private ImageView img;
+    private TextView txtTitle, txtDesc;
+    private HttpRequest r;
+    private int c;
 
     @Override protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -37,12 +31,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         btnPref = this.findViewById(R.id.btnPref);
         btnHome = this.findViewById(R.id.btnHome);
         btnFeed = this.findViewById(R.id.btnFeed);
-        txtOut = this.findViewById(R.id.txtOut);
+        txtTitle = this.findViewById(R.id.txtTitle);
+        txtDesc = this.findViewById(R.id.txtDesc);
         img = this.findViewById(R.id.img);
         btnPref.setOnClickListener(this);
         btnHome.setOnClickListener(this);
         btnFeed.setOnClickListener(this);
-        txtOut.setMovementMethod(new ScrollingMovementMethod());
     }
 
     @Override public void onClick(View v) {
@@ -66,27 +60,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             r = new HttpRequest();
             r.execute("https://newsapi.org/v2/top-headlines?sources=bbc-news&apiKey=088fb1a3c9e3440db5b65f2c48c3f705");
             c = 0;
-        }
-
-        c++;
-
-        JSONObject[] s;
-
-        try {
-            j = r.getResultAsJSON();
-            s = new JSONObject[1000];
-
-            txtOut.setText(R.string.loadingText);
+            txtTitle.setText(R.string.loadingText);
+        } else try {
+            c++;
+            JSONArray j = r.getResultAsJSON();
 
             if (j == null) return;
 
-            for (int i = 0; i < j.length(); i++)
-                s[i] = j.getJSONObject(i);
+            txtTitle.setText(j.getJSONObject(c).getString("title"));
+            Glide.with(this).load(j.getJSONObject(c).getString("urlToImage")).into(img);
 
-            txtOut.setText(s[c].getString("title"));
-            Glide.with(this).load(s[c].getString("urlToImage")).into(img);
-
-        } catch (JSONException ignored) {
-        }
+        } catch (JSONException ignored) {}
     }
 }

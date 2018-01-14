@@ -74,4 +74,5 @@
 
     <string name="pref_title_vibrate">Vibrate</string>
     <string name="loadingText">Loading JSON</string>
+    <string name="article_flavour_image">Article flavour Image</string>
 </resources>
