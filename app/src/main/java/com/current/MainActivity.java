@@ -1,25 +1,36 @@
 package com.current;
 
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.method.ScrollingMovementMethod;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.bumptech.glide.Glide;
+
 import org.json.JSONArray;
 import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.InputStream;
+import java.net.URI;
+import java.net.URL;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
     Button btnPref, btnHome, btnFeed;
-    HttpRequest r;
+    ImageView img;
     TextView txtOut;
+    HttpRequest r;
     JSONArray j;
     int c;
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    @Override protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
@@ -27,14 +38,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         btnHome = this.findViewById(R.id.btnHome);
         btnFeed = this.findViewById(R.id.btnFeed);
         txtOut = this.findViewById(R.id.txtOut);
+        img = this.findViewById(R.id.img);
         btnPref.setOnClickListener(this);
         btnHome.setOnClickListener(this);
         btnFeed.setOnClickListener(this);
         txtOut.setMovementMethod(new ScrollingMovementMethod());
     }
 
-    @Override
-    public void onClick(View v) {
+    @Override public void onClick(View v) {
         if (v == btnPref) opnPref();
         else if (v == btnFeed) opnFeed();
         else if (v == btnHome) req(v);
@@ -59,22 +70,34 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         c++;
 
-        String[] s;
+        JSONObject[] s;
 
         try {
             j = r.getResultAsJSON();
-            s = new String[1000];
+            s = new JSONObject[1000];
 
             txtOut.setText(R.string.loadingText);
 
             if (j == null) return;
 
             for (int i = 0; i < j.length(); i++)
-                s[i] = j.getJSONObject(i).toString();
+                s[i] = j.getJSONObject(i);
 
-            txtOut.setText(s[c]);
+            txtOut.setText(s[c].getString("urlToImage"));
+            Glide.with(this).load(s[c].getString("urlToImage")).into(img);
+
         } catch (JSONException ignored) {
         }
 
+    }
+
+    public static Drawable getImage(String url) {
+        try {
+            InputStream is = (InputStream) new URL(url).getContent();
+            Drawable d = Drawable.createFromStream(is, "src name");
+            return d;
+        } catch (Exception e) {
+            return null;
+        }
     }
 }

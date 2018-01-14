@@ -6,6 +6,24 @@
     android:layout_height="match_parent"
     tools:context="com.current.MainActivity">
 
+    <TextView
+        android:id="@+id/txtOut"
+        android:layout_width="match_parent"
+        android:layout_height="245dp"
+        android:layout_marginTop="2dp"
+        android:textSize="36sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/img" />
+
+    <ImageView
+        android:id="@+id/img"
+        android:layout_width="392dp"
+        android:layout_height="304dp"
+        android:layout_marginBottom="152dp"
+        android:elevation="-1dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
     <Button
         android:id="@+id/btnPref"
         style="@style/Widget.AppCompat.Button"
@@ -35,16 +53,5 @@
         android:text="Feed"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
-
-    <TextView
-        android:id="@+id/txtOut"
-        android:layout_width="382dp"
-        android:layout_height="605dp"
-        android:layout_marginBottom="24dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btnPref" />
 
 </android.support.constraint.ConstraintLayout>
