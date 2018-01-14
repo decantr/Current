@@ -26,8 +26,7 @@ import javax.xml.parsers.ParserConfigurationException;
  * Created by decanter on 09/01/18.
  */
 
-public class HttpRequest extends AsyncTask<String,Void, Void>
-{
+public class HttpRequest extends AsyncTask<String,Void, Void> {
     private String re;
     private boolean fi;
 
