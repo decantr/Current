@@ -88,16 +88,5 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         } catch (JSONException ignored) {
         }
-
-    }
-
-    public static Drawable getImage(String url) {
-        try {
-            InputStream is = (InputStream) new URL(url).getContent();
-            Drawable d = Drawable.createFromStream(is, "src name");
-            return d;
-        } catch (Exception e) {
-            return null;
-        }
     }
 }
