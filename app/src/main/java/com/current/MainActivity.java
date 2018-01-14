@@ -83,7 +83,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             for (int i = 0; i < j.length(); i++)
                 s[i] = j.getJSONObject(i);
 
-            txtOut.setText(s[c].getString("urlToImage"));
+            txtOut.setText(s[c].getString("title"));
             Glide.with(this).load(s[c].getString("urlToImage")).into(img);
 
         } catch (JSONException ignored) {
