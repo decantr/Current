@@ -7,39 +7,37 @@ import android.text.method.ScrollingMovementMethod;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
-
 import org.json.JSONArray;
 import org.json.JSONException;
-import org.json.JSONObject;
-import org.w3c.dom.NodeList;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
     Button btnPref, btnHome, btnFeed;
-    HttpRequest task;
+    HttpRequest r;
     TextView txtOut;
-    JSONArray jar;
+    JSONArray j;
+    int c;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        btnPref = (Button) this.findViewById(R.id.btnPref);
-        btnPref.setOnClickListener(this);
-        btnFeed = this.findViewById(R.id.btnFeed);
-        btnFeed.setOnClickListener(this);
+        btnPref = this.findViewById(R.id.btnPref);
         btnHome = this.findViewById(R.id.btnHome);
-        btnHome.setOnClickListener(this);
+        btnFeed = this.findViewById(R.id.btnFeed);
         txtOut = this.findViewById(R.id.txtOut);
+        btnPref.setOnClickListener(this);
+        btnHome.setOnClickListener(this);
+        btnFeed.setOnClickListener(this);
+        txtOut.setMovementMethod(new ScrollingMovementMethod());
     }
 
     @Override
     public void onClick(View v) {
         if (v == btnPref) opnPref();
-//        else if (v == btnFeed) opnFeed();
-//        else if (v == btnHome) req(v);
-        else req(v);
+        else if (v == btnFeed) opnFeed();
+        else if (v == btnHome) req(v);
     }
 
     public void opnPref() {
@@ -53,45 +51,30 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     public void req(View v) {
-        String str;
-        NodeList n;
-
-        if (task == null) {
-            task = new HttpRequest();
-            task.execute("c");
+        if (r == null) {
+            r = new HttpRequest();
+            r.execute("https://newsapi.org/v2/top-headlines?sources=bbc-news&apiKey=088fb1a3c9e3440db5b65f2c48c3f705");
+            c = 0;
         }
 
-        if (v == btnHome) {
-            str = task.getReturnEntry();
+        c++;
 
-            txtOut.setText(str);
+        String[] s;
+
+        try {
+            j = r.getResultAsJSON();
+            s = new String[1000];
+
+            txtOut.setText(R.string.loadingText);
+
+            if (j == null) return;
+
+            for (int i = 0; i < j.length(); i++)
+                s[i] = j.getJSONObject(i).toString();
+
+            txtOut.setText(s[c]);
+        } catch (JSONException ignored) {
         }
-        else if (v == btnFeed) {
-            JSONArray tmp;
-            try {
-                jar = task.getResultAsJSON();
 
-                if (jar == null) {
-                    txtOut.setText ("Still loading JSON");
-                    return;
-                }
-
-                str = "";
-
-                for (int i = 0; i < jar.length(); i++) {
-                    tmp = jar.getJSONArray(i);
-                    str += tmp.getString(i) + "\n";
-
-                }
-                txtOut.setText(str);
-                txtOut.setMovementMethod(new ScrollingMovementMethod());
-
-
-            }
-            catch (JSONException ex) {
-                txtOut.setText("Some horror: " + ex.getMessage());
-            }
-
-        }
     }
 }

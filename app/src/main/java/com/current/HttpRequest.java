@@ -28,94 +28,73 @@ import javax.xml.parsers.ParserConfigurationException;
 
 public class HttpRequest extends AsyncTask<String,Void, Void>
 {
-    private String returnEntry;
-    private boolean finished;
+    private String re;
+    private boolean fi;
 
+    private void readResponse(BufferedReader in) {
+        String t = "";
+        StringBuilder r = new StringBuilder();
 
-    public void sendPostRequest (String where) {
-        URL loc = null;
-        HttpURLConnection conn = null;
+        do {
+            try {
+                t = in.readLine();
+            } catch (IOException ignored) {}
+
+            if (t != null) r.append(t);
+        } while (t != null);
+
+        re = r.toString();
+    }
+
+    public void sendPostRequest (String w) {
+        URL l;
+        HttpURLConnection c = null;
         InputStreamReader is;
         BufferedReader in;
 
         try {
-            loc = new URL(where);
-        }
-        catch (MalformedURLException ex) {
+            l = new URL(w);
+        } catch (MalformedURLException e) {
             return;
         }
 
         try {
-            conn = (HttpURLConnection)loc.openConnection();
-            is = new InputStreamReader (conn.getInputStream(), "UTF-8");
-            in = new BufferedReader (is);
-
-            readResponse (in);
-        }
-        catch (IOException ex) {
-
-        }
-        finally {
-            conn.disconnect();
+            c = (HttpURLConnection) l.openConnection();
+            is = new InputStreamReader(c.getInputStream(), "UTF-8");
+            in = new BufferedReader(is);
+            readResponse(in);
+        } catch (IOException ignored) {
+        } finally {
+            c.disconnect();
         }
 
     }
 
-    public String getReturnEntry() {
-        if (!finished) {
-            return "Hold tight!";
-        }
-
-        return returnEntry;
+    String getReturnEntry() {
+        if (!fi) return "Hold tight my man!";
+        return re;
     }
 
-    public void readResponse(BufferedReader in) {
-        String tmp = "";
-        StringBuffer response = new StringBuffer();
+    public JSONArray getResultAsJSON() {
+        JSONArray j = null;
 
-        do {
-            try {
-                tmp = in.readLine();
-            }
-            catch (IOException ex) {
-
-            }
-
-            if (tmp != null) {
-                response.append(tmp);
-            }
-        } while (tmp != null);
-
-        returnEntry = response.toString();
+        try {
+            if (fi) j = new JSONObject(re).getJSONArray("articles");
+        } catch (JSONException e) {
+            Log.d ("Output", "Error is " + e.getMessage());
+        }
+        return j;
     }
 
     @Override
     protected void onPostExecute (Void result) {
-        finished = true;
-
-        Log.d("Output", returnEntry);
-
+        fi = true;
+        Log.d("Output", re);
     }
     @Override
-    protected Void doInBackground(String... params) {
-        finished = false;
-        sendPostRequest (params[0]);
+    protected Void doInBackground(String... p) {
+        fi = false;
+        sendPostRequest(p[0]);
         return null;
-    }
-
-    public JSONArray getResultAsJSON() {
-        JSONObject job;
-        JSONArray jar = null;
-
-        if (!finished) return null;
-
-        try {
-            job = new JSONObject(returnEntry);
-            jar = job.getJSONArray("articles");
-        }
-        catch (JSONException ex) {
-            Log.d ("Output", "Error is " + ex.getMessage());
-        }
-        return jar;
     }
 }
