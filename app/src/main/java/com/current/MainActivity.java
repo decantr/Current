@@ -9,6 +9,7 @@ import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -28,7 +29,8 @@ import java.net.URL;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
-    private Button btnPref, btnFeed, btnMore, btnNext, btnPrev;
+    private ImageButton btnPref, btnFeed;
+    private Button btnMore, btnNext, btnPrev;
     private ImageView img;
     private TextView txtTitle, txtDesc;
     private HttpRequest r;

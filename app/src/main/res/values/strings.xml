@@ -77,4 +77,11 @@
     <string name="article_flavour_image">Article flavour Image</string>
     <string name="back"><![CDATA[<]]></string>
     <string name="next"><![CDATA[>]]></string>
+    <string name="description">Description</string>
+    <string name="placeholderDesc">Description</string>
+    <string name="open_feed">Open feed</string>
+    <string name="open_preferences">Open preferences</string>
+    <string name="read_more">Read More</string>
+    <string name="placeholderTitle">Title</string>
+    <string name="title">Title</string>
 </resources>
