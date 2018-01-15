@@ -14,7 +14,7 @@ public class DBHandler extends SQLiteOpenHelper {
     }
 
     static String getName() {
-        return "main";
+        return DB_NAME;
     }
 
     @Override
