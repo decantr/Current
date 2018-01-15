@@ -50,21 +50,20 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
+        btnLike = findViewById(R.id.btnLike);
+        btnLike.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+                Snackbar.make(view, R.string.saved, Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
             }
         });
 
 //        btnPref = this.findViewById(R.id.btnPref);
 //        btnFeed = this.findViewById(R.id.btnFeed);
-        btnLike = this.findViewById(R.id.btnLike);
         btnNext = this.findViewById(R.id.btnNext);
         btnPrev = this.findViewById(R.id.btnPrev);
         txtTitle = this.findViewById(R.id.txtTitle);

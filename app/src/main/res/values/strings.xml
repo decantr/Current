@@ -15,4 +15,5 @@
     <string name="loadingDesc">Loading JSON</string>
     <string name="tapanywhere">Tap to read more</string>
     <string name="like">Like Article</string>
+    <string name="saved">Story Saved!</string>
 </resources>
