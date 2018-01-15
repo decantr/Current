@@ -41,7 +41,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     SharedPreferences sharedPref;
     private Button btnNext, btnPrev;
     private ImageView img;
-    private TextView txtTitle, txtDesc;
+    private TextView txtTitle, txtDesc, txtMore;
     private ProgressBar barPage;
     private HttpRequest r;
     private int c;
@@ -71,6 +71,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         btnPrev = this.findViewById(R.id.btnPrev);
         txtTitle = this.findViewById(R.id.txtTitle);
         txtDesc = this.findViewById(R.id.txtDesc);
+        txtMore = this.findViewById(R.id.txtMore);
         barPage = this.findViewById(R.id.barPage);
         img = this.findViewById(R.id.img);
         cl = this.findViewById(R.id.cl);
@@ -159,30 +160,37 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void doDisplay(boolean error) throws JSONException {
-        txtTitle.setText("");
-        txtDesc.setText("");
-        String placeholder = "http://via.placeholder.com/350x150";
+
+        String title = "";
+        String desc = "";
+        String image = "";
+        String more = "";
 
         if (!error) {
-            String title = j.getJSONObject(c).getString("title");
-            if (title != null)
-                txtTitle.setText(title);
-            String desc = j.getJSONObject(c).getString("description");
-            if (desc != null)
-                txtDesc.setText(desc);
-            String image = j.getJSONObject(c).getString("urlToImage");
-            if (image != null)
-                Glide.with(this).load(image).into(img);
-            else
-                Glide.with(this).load(placeholder).into(img);
+            JSONObject t = j.getJSONObject(c);
+
+            title = t.getString("title");
+            if (title == null) title = "";
+
+            desc = t.getString("description");
+            if (desc == null) desc = "";
+
+            image = t.getString("urlToImage");
+            if (image == null) image = "http://via.placeholder.com/350x150";
+
+            if (t.getString("url") == null) more = "";
         }
+
+        txtTitle.setText(title);
+        txtDesc.setText(desc);
+        txtMore.setText(more);
+        Glide.with(this).load(image).into(img);
+
     }
 
     private void doJson() {
         String choice = sharedPref.getString("cat_or_source", "");
         String salt = "country=gb&";
-
-        Log.e("meme", "" + sharedPref.getString("source", ""));
 
         if (choice.equals("source"))
             salt = "sources=" +
@@ -192,9 +200,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     sharedPref.getString("cat", "") + "&";
 
         c = 0;
-
-        Log.e("meme", "" + salt);
-        Log.e("meme", "" + "https://newsapi.org/v2/top-headlines?" + salt + "apiKey=088fb1a3c9e3440db5b65f2c48c3f705");
 
         r = new HttpRequest();
         r.execute("https://newsapi.org/v2/top-headlines?" + salt + "apiKey=088fb1a3c9e3440db5b65f2c48c3f705");
@@ -207,7 +212,19 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         try {
             startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(j.getJSONObject(c).getString("url"))));
         } catch (Exception e) {
-            toast("URL not loaded yet!");
+            toast("URL not loaded!");
+        }
+    }
+
+    void save() {
+        if (j != null) {
+            try {
+                JSONObject a = j.getJSONObject(c);
+//                DBUtil.saveArticle(
+
+//                )
+            } catch (Exception e) {
+            }
         }
     }
 

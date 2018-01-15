@@ -38,7 +38,10 @@ public class DBUtil {
 
         for (int i = 0; i < dbSize; i++) {
             t = new String[5];
-            for (int j = 0; j < 5; j++) t[j] = cur.getString(j);
+
+            for (int j = 0; j < 5; j++)
+                t[j] = cur.getString(j);
+
             articles.add(t);
         }
 
