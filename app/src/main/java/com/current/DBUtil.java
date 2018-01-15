@@ -48,7 +48,7 @@ public class DBUtil {
         return articles;
     }
 
-    void saveArticle(String n, String t, String d, String u, String i){
+    public void saveArticle(String n, String t, String d, String u, String i){
         ContentValues a = new ContentValues();
 
         String[] h = {"source_name", "title", "description", "url", "image"};

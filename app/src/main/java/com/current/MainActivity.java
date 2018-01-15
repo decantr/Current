@@ -62,7 +62,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         btnLike.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, R.string.saved, Snackbar.LENGTH_SHORT)
+                int rtn;
+                if (save()) {
+                    rtn = R.string.saved;
+                } else rtn = R.string.nosaved;
+                Snackbar.make(view, rtn, Snackbar.LENGTH_SHORT)
                         .setAction("Action", null).show();
             }
         });
@@ -208,23 +212,28 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         txtDesc.setText(R.string.loadingDesc);
     }
 
+    boolean save() {
+        if (j != null) {
+            try {
+                JSONObject a = j.getJSONObject(c);
+                DBUtil.saveArticle(a.getJSONObject("source").getString("name"),
+                        a.getString("title"),
+                        a.getString("description"),
+                        a.getString("url"),
+                        a.getString("urlToImage")
+                );
+                return true;
+            } catch (Exception e) {
+                return false;
+            }
+        } else return false;
+    }
+    
     void more() {
         try {
             startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(j.getJSONObject(c).getString("url"))));
         } catch (Exception e) {
             toast("URL not loaded!");
-        }
-    }
-
-    void save() {
-        if (j != null) {
-            try {
-                JSONObject a = j.getJSONObject(c);
-//                DBUtil.saveArticle(
-
-//                )
-            } catch (Exception e) {
-            }
         }
     }
 
