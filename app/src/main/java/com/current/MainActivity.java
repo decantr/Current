@@ -98,8 +98,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         return super.onOptionsItemSelected(item);
     }
     @Override public void onClick(View v) {
-        if (v == btnFeed) opnFeed();
-        else if (v == btnNext) loop(true);
+        if (v == btnNext) loop(true);
         else if (v == btnPrev) loop(false);
         else if (v == cl) more();
     }
