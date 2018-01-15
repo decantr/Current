@@ -3,11 +3,17 @@ package com.current;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.constraint.ConstraintLayout;
+import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.View;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -30,50 +36,87 @@ import java.net.URL;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
-    private ImageButton btnPref, btnFeed;
-    private Button btnMore, btnNext, btnPrev;
+    private ImageButton btnPref, btnFeed, btnLike;
+    private Button btnNext, btnPrev;
     private ImageView img;
     private TextView txtTitle, txtDesc;
     private ProgressBar barPage;
     private HttpRequest r;
     private int c;
     private JSONArray j;
+    private ConstraintLayout cl;
 
-    @Override protected void onCreate(Bundle savedInstanceState) {
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
 
-        btnPref = this.findViewById(R.id.btnPref);
-        btnFeed = this.findViewById(R.id.btnFeed);
-        btnMore = this.findViewById(R.id.btnMore);
+        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+                        .setAction("Action", null).show();
+            }
+        });
+
+//        btnPref = this.findViewById(R.id.btnPref);
+//        btnFeed = this.findViewById(R.id.btnFeed);
+        btnLike = this.findViewById(R.id.btnLike);
         btnNext = this.findViewById(R.id.btnNext);
         btnPrev = this.findViewById(R.id.btnPrev);
         txtTitle = this.findViewById(R.id.txtTitle);
         txtDesc = this.findViewById(R.id.txtDesc);
         barPage = this.findViewById(R.id.barPage);
         img = this.findViewById(R.id.img);
-        btnPref.setOnClickListener(this);
-        btnFeed.setOnClickListener(this);
-        btnMore.setOnClickListener(this);
+        cl = this.findViewById(R.id.cl);
+//        btnPref.setOnClickListener(this);
+//        btnFeed.setOnClickListener(this);
+//        btnMore.setOnClickListener(this);
         btnNext.setOnClickListener(this);
         btnPrev.setOnClickListener(this);
+        cl.setOnClickListener(this);
         txtDesc.setMovementMethod(new ScrollingMovementMethod());
 
         req();
     }
 
-    @Override public void onClick(View v) {
-        if (v == btnPref) opnPref();
-        else if (v == btnFeed) opnFeed();
-        else if (v == btnMore) more();
-        else if (v == btnNext) loop(true);
-        else if (v == btnPrev) loop(false);
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        return true;
     }
 
-    public void opnPref() {
-        Intent in = new Intent(this, SettingsActivity.class);
-        startActivity(in);
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        //noinspection SimplifiableIfStatement
+        if (id == R.id.action_settings) {
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
     }
+    @Override public void onClick(View v) {
+//        if (v == btnPref) opnPref();
+        if (v == btnFeed) opnFeed();
+//        else if (v == btnMore) more();
+        else if (v == btnNext) loop(true);
+        else if (v == btnPrev) loop(false);
+        else if (v == cl) more();
+    }
+
+//    public void opnPref() {
+//        Intent in = new Intent(this, SettingsActivity.class);
+//        startActivity(in);
+//    }
 
     public void opnFeed() {
         Intent in = new Intent(this, null);
@@ -182,4 +225,5 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             return null;
         }
     }
+
 }
