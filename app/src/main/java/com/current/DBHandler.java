@@ -1,6 +1,5 @@
 package com.current;
 
-import android.content.ContentValues;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
@@ -20,8 +19,7 @@ public class DBHandler extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        db.execSQL(
-                "CREATE TABLE " + DB_NAME +
+        db.execSQL( "CREATE TABLE " + DB_NAME +
                         "(id integer primary key autoincrement not null, " +
                         "source_name text not null, " +
                         "title text not null, " +
