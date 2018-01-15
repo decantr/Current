@@ -76,12 +76,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     public void loop(boolean a) {
-        if (a) 
+        if (a)
             if (c != j.length() - 1) c++;
-            else Toast.makeText(this, "Last Story!", Toast.LENGTH_SHORT).show();
+            else toast("Last Story!");
         else if (c != 0) c--;
-        else Toast.makeText(this, "First Story!", Toast.LENGTH_SHORT).show();
+        else toast("First Story!");
         req();
+    }
+
+    void toast(String t) {
+        Toast.makeText(this, t, Toast.LENGTH_SHORT).show();
     }
 
     public void req() {
@@ -107,7 +111,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         try {
             startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(j.getJSONObject(c).getString("url"))));
         } catch (Exception e) {
-            Toast.makeText(this, "URL not loaded yet!", Toast.LENGTH_SHORT).show();
+            toast("URL not loaded yet!");
         }
     }
 
