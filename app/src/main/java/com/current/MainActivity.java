@@ -36,7 +36,6 @@ import java.net.URL;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
-    private ImageButton btnPref, btnFeed, btnLike;
     private Button btnNext, btnPrev;
     private ImageView img;
     private TextView txtTitle, txtDesc;
@@ -53,17 +52,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        btnLike = findViewById(R.id.btnLike);
+        ImageButton btnLike = findViewById(R.id.btnLike);
         btnLike.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, R.string.saved, Snackbar.LENGTH_LONG)
+                Snackbar.make(view, R.string.saved, Snackbar.LENGTH_SHORT)
                         .setAction("Action", null).show();
             }
         });
 
-//        btnPref = this.findViewById(R.id.btnPref);
-//        btnFeed = this.findViewById(R.id.btnFeed);
         btnNext = this.findViewById(R.id.btnNext);
         btnPrev = this.findViewById(R.id.btnPrev);
         txtTitle = this.findViewById(R.id.txtTitle);
@@ -71,9 +68,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         barPage = this.findViewById(R.id.barPage);
         img = this.findViewById(R.id.img);
         cl = this.findViewById(R.id.cl);
-//        btnPref.setOnClickListener(this);
-//        btnFeed.setOnClickListener(this);
-//        btnMore.setOnClickListener(this);
         btnNext.setOnClickListener(this);
         btnPrev.setOnClickListener(this);
         cl.setOnClickListener(this);
@@ -98,24 +92,21 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
-            return true;
+            opnPref();
         }
 
         return super.onOptionsItemSelected(item);
     }
     @Override public void onClick(View v) {
-//        if (v == btnPref) opnPref();
         if (v == btnFeed) opnFeed();
-//        else if (v == btnMore) more();
         else if (v == btnNext) loop(true);
         else if (v == btnPrev) loop(false);
         else if (v == cl) more();
     }
 
-//    public void opnPref() {
-//        Intent in = new Intent(this, SettingsActivity.class);
-//        startActivity(in);
-//    }
+    public void opnPref() {
+        startActivity(new Intent(this, Preferences.class));
+    }
 
     public void opnFeed() {
         Intent in = new Intent(this, null);

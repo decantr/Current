@@ -16,4 +16,5 @@
     <string name="tapanywhere">Tap to read more</string>
     <string name="like">Like Article</string>
     <string name="saved">Story Saved!</string>
+    <string name="title_activity_preferences">Preferences</string>
 </resources>
