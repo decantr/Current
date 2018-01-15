@@ -17,4 +17,5 @@
     <string name="like">Like Article</string>
     <string name="saved">Story Saved!</string>
     <string name="title_activity_preferences">Preferences</string>
+    <string name="lang">choose language</string>
 </resources>

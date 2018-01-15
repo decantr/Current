@@ -104,7 +104,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     public void opnPref() {
-        startActivity(new Intent(this, Preferences.class));
+        startActivity(new Intent(this, SettingsActivity.class));
     }
 
     public void opnFeed() {
