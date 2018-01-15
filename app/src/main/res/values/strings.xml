@@ -17,5 +17,8 @@
     <string name="like">Like Article</string>
     <string name="saved">Story Saved!</string>
     <string name="title_activity_preferences">Preferences</string>
-    <string name="lang">choose language</string>
+    <string name="cat">Choose Category</string>
+    <string name="defaultchoice">source</string>
+    <string name="default_cat">category=technology&amp;</string>
+    <string name="default_source">source=bbc-news&amp;</string>
 </resources>

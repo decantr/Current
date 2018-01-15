@@ -2,9 +2,17 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
     <ListPreference
-        android:defaultValue="1"
-        android:entries="@array/pref_lang"
-        android:entryValues="@array/pref_lang"
-        android:key="list_preference_1"
-        android:title="@string/lang" />
+        android:defaultValue="@string/defaultchoice"
+        android:entries="@array/pref_cat_or_source"
+        android:entryValues="@array/pref_cat_or_source_val"
+        android:key="cat_or_source"
+        android:summary="Choose either catagory or source"
+        android:title="Category or Source" />
+    <ListPreference
+        android:defaultValue="@string/default_cat"
+        android:entries="@array/pref_cat"
+        android:entryValues="@array/pref_cat_val"
+        android:key="cat"
+        android:summary="Choose which category you want to see"
+        android:title="@string/cat" />
 </PreferenceScreen>

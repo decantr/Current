@@ -1,17 +1,43 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string-array name="pref_lang">
-        <item>English</item>
-        <item>Spanish</item>
-        <item>Russian</item>
-        <item>French</item>
-        <item>German</item>
+    <string-array name="pref_cat_or_source">
+        <item>Source</item>
+        <item>Category</item>
     </string-array>
-    <string-array name="pref_lang_id">
-        <item>en</item>
-        <item>es</item>
-        <item>ru</item>
-        <item>fr</item>
-        <item>de</item>
+    <string-array name="pref_cat_or_source_val">
+        <item>source</item>
+        <item>category</item>
+    </string-array>
+
+    <string-array name="pref_cat">
+        <item>Business</item>
+        <item>Entertainment</item>
+        <item>General</item>
+        <item>Health</item>
+        <item>Science</item>
+        <item>Sports</item>
+        <item>Technology</item>
+    </string-array>
+    <string-array name="pref_cat_val">
+        <item>category=business&amp;</item>
+        <item>category=entertainment&amp;</item>
+        <item>category=general&amp;</item>
+        <item>category=health&amp;</item>
+        <item>category=science&amp;</item>
+        <item>category=sports&amp;</item>
+        <item>category=technology&amp;</item>
+    </string-array>
+
+    <string-array name="pref_source">
+        <item>BBC News</item>
+        <item>Ars Technica</item>
+        <item>Reuters</item>
+        <item>The Lad Bible</item>
+    </string-array>
+    <string-array name="pref_source_val">
+        <item>source=bbc-news&amp;</item>
+        <item>source=ars-technica&amp;</item>
+        <item>source=reuters&amp;</item>
+        <item>source=the-lad-bible&amp;</item>
     </string-array>
 </resources>

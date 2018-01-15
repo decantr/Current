@@ -1,19 +1,21 @@
 package com.current;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.constraint.ConstraintLayout;
-import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
-import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -44,6 +46,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private int c;
     private JSONArray j;
     private ConstraintLayout cl;
+    private String cat, salt;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,6 +54,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         setContentView(R.layout.activity_main);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        PreferenceManager.setDefaultValues(this, R.xml.pref_main, false);
+
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+
+        cat = sharedPref.getString("cat_or_source", "");
+        if (cat.equals("source")) salt = "sources=" + "bbc-news" + "&";
+        else salt = "country=gb&category=" + "technology" + "&";
 
         ImageButton btnLike = findViewById(R.id.btnLike);
         btnLike.setOnClickListener(new View.OnClickListener() {
@@ -97,7 +107,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         return super.onOptionsItemSelected(item);
     }
-    @Override public void onClick(View v) {
+
+    @Override
+    public void onClick(View v) {
         if (v == btnNext) loop(true);
         else if (v == btnPrev) loop(false);
         else if (v == cl) more();
@@ -130,7 +142,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void req() {
         if (r == null) {
             r = new HttpRequest();
-            r.execute("https://newsapi.org/v2/top-headlines?sources=bbc-news&apiKey=088fb1a3c9e3440db5b65f2c48c3f705");
+            Log.e("meme", "meme" + cat);
+            Log.e("veve", "veve" + salt);
+            String a = "https://newsapi.org/v2/top-headlines?" + salt + "apiKey=088fb1a3c9e3440db5b65f2c48c3f705";
+            Log.e("", a);
+            r.execute(a);
             c = 0;
             txtTitle.setText(R.string.loadingText);
             txtDesc.setText(R.string.loadingDesc);
@@ -143,7 +159,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             txtDesc.setText(j.getJSONObject(c).getString("description"));
             Glide.with(this).load(j.getJSONObject(c).getString("urlToImage")).into(img);
         } catch (JSONException e) {
-            Log.e("JSON","JSON failed to parse" + e.getMessage());
+            Log.e("JSON", "JSON failed to parse" + e.getMessage());
         }
     }
 
@@ -155,8 +171,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
-    public class HttpRequest extends AsyncTask<String,Void, Void> {
-        private String re;
+    public class HttpRequest extends AsyncTask<String, Void, Void> {
+        public String re;
         private boolean fi;
 
         private void readResponse(BufferedReader in) {
@@ -202,13 +218,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             return fi ? new JSONObject(re).getJSONArray("articles") : null;
         }
 
-        @Override protected void onPostExecute(Void result) {
+        @Override
+        protected void onPostExecute(Void result) {
             fi = true;
-            Log.d("Output", re);
+            Log.d("Output", "" + re);
             req();
         }
 
-        @Override protected Void doInBackground(String... p) {
+        @Override
+        protected Void doInBackground(String... p) {
             fi = false;
             sendPostRequest(p[0]);
             return null;

@@ -1,5 +1,6 @@
 package com.current;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import android.content.Context;
@@ -76,7 +77,6 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
                         index >= 0
                                 ? listPreference.getEntries()[index]
                                 : null);
-
             } else if (preference instanceof EditTextPreference) {
                 if (preference.getKey().equals("key_gallery_name")) {
                     // update the changed gallery name to summary filed
