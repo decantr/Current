@@ -12,7 +12,7 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="16dp"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="32dp"
+        android:layout_marginTop="16dp"
         android:contentDescription="@string/article_flavour_image"
         android:elevation="-1dp"
         app:layout_constraintEnd_toEndOf="parent"
@@ -29,6 +29,7 @@
         android:contentDescription="@string/title"
         android:text="@string/placeholderTitle"
         android:textAlignment="center"
+        android:textColor="@android:color/black"
         android:textSize="24sp"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
@@ -94,6 +95,7 @@
         android:layout_marginTop="8dp"
         android:background="@android:color/background_light"
         android:contentDescription="@string/open_preferences"
+        android:tint="@color/colorPrimaryDark"
         android:visibility="visible"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -107,8 +109,21 @@
         android:layout_marginTop="8dp"
         android:background="@android:color/background_light"
         android:contentDescription="@string/open_feed"
+        android:tint="@color/colorPrimaryDark"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/ic_rss_feed_black_24dp" />
+
+    <ProgressBar
+        android:id="@+id/barPage"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="32dp"
+        android:layout_marginStart="32dp"
+        app:layout_constraintBottom_toTopOf="@+id/btnMore"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
 </android.support.constraint.ConstraintLayout>
