@@ -44,8 +44,8 @@ public class DBUtil {
 
         return articles;
     }
-    
-    void addArticle(String n, String t, String d, String u, String i){
+
+    void saveArticle(String n, String t, String d, String u, String i){
         ContentValues a = new ContentValues();
 
         String[] h = {"source_name", "title", "description", "url", "image"};
@@ -53,5 +53,7 @@ public class DBUtil {
 
         for (int j = 0; j < 5; j++)
             a.put(h[j], c[j]);
+
+        this.main.insert(DBHandler.getName(), null, a);
     }
 }
