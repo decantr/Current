@@ -61,8 +61,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         if (v == btnPref) opnPref();
         else if (v == btnFeed) opnFeed();
         else if (v == btnMore) more();
-        else if (v == btnNext) {c++; req();}
-        else if (v == btnPrev) {c--; req();}
+        else if (v == btnNext) loop(true);
+        else if (v == btnPrev) loop(false);
     }
 
     public void opnPref() {
@@ -73,6 +73,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void opnFeed() {
         Intent in = new Intent(this, null);
         startActivity(in);
+    }
+
+    public void loop(boolean a) {
+        if (a) 
+            if (c != j.length() - 1) c++;
+            else Toast.makeText(this, "Last Story!", Toast.LENGTH_SHORT).show();
+        else if (c != 0) c--;
+        else Toast.makeText(this, "First Story!", Toast.LENGTH_SHORT).show();
+        req();
     }
 
     public void req() {
@@ -122,7 +131,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             re = r.toString();
         }
 
-        public void sendPostRequest(String w) {
+        void sendPostRequest(String w) {
             URL l;
             HttpURLConnection c = null;
             InputStreamReader is;
@@ -143,22 +152,19 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             } finally {
                 c.disconnect();
             }
-
         }
-        
+
         JSONArray getResultAsJSON() throws JSONException {
             return fi ? new JSONObject(re).getJSONArray("articles") : null;
         }
 
-        @Override
-        protected void onPostExecute(Void result) {
+        @Override protected void onPostExecute(Void result) {
             fi = true;
             Log.d("Output", re);
             req();
         }
 
-        @Override
-        protected Void doInBackground(String... p) {
+        @Override protected Void doInBackground(String... p) {
             fi = false;
             sendPostRequest(p[0]);
             return null;
