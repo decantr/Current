@@ -38,6 +38,7 @@ import java.net.URL;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
+    SharedPreferences sharedPref;
     private Button btnNext, btnPrev;
     private ImageView img;
     private TextView txtTitle, txtDesc;
@@ -46,7 +47,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private int c;
     private JSONArray j;
     private ConstraintLayout cl;
-    private String cat, salt;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,11 +56,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         setSupportActionBar(toolbar);
         PreferenceManager.setDefaultValues(this, R.xml.pref_main, false);
 
-        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
-
-        cat = sharedPref.getString("cat_or_source", "");
-        if (cat.equals("source")) salt = "sources=" + "bbc-news" + "&";
-        else salt = "country=gb&category=" + "technology" + "&";
+        sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
 
         ImageButton btnLike = findViewById(R.id.btnLike);
         btnLike.setOnClickListener(new View.OnClickListener() {
@@ -103,6 +99,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             opnPref();
+        } else if (id == R.id.action_feed) {
+            opnFeed();
+        } else if (id == R.id.action_refresh) {
+            r = null;
+            req();
         }
 
         return super.onOptionsItemSelected(item);
@@ -125,14 +126,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     public void loop(boolean a) {
-        if (a)
-            if (c != j.length() - 1) c++;
-            else toast("Last Story!");
-        else if (c != 0) c--;
-        else toast("First Story!");
-        barPage.setMax(j.length() - 1);
-        barPage.setProgress(c);
-        req();
+        if (j != null) {
+            if (a)
+                if (c != j.length() - 1) c++;
+                else toast("Last Story!");
+            else if (c != 0) c--;
+            else toast("First Story!");
+            barPage.setMax(j.length() - 1);
+            barPage.setProgress(c);
+            req();
+        } else
+            toast("Error in URL parsing");
     }
 
     void toast(String t) {
@@ -140,27 +144,63 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     public void req() {
-        if (r == null) {
-            r = new HttpRequest();
-            Log.e("meme", "meme" + cat);
-            Log.e("veve", "veve" + salt);
-            String a = "https://newsapi.org/v2/top-headlines?" + salt + "apiKey=088fb1a3c9e3440db5b65f2c48c3f705";
-            Log.e("", a);
-            r.execute(a);
-            c = 0;
-            txtTitle.setText(R.string.loadingText);
-            txtDesc.setText(R.string.loadingDesc);
-        } else try {
+        if (r == null) doJson();
+        else try {
             j = r.getResultAsJSON();
 
-            if (j == null) return;
+            if (j == null) {
+                toast("error in request!");
+                doDisplay(true);
+            } else doDisplay(false);
 
-            txtTitle.setText(j.getJSONObject(c).getString("title"));
-            txtDesc.setText(j.getJSONObject(c).getString("description"));
-            Glide.with(this).load(j.getJSONObject(c).getString("urlToImage")).into(img);
         } catch (JSONException e) {
             Log.e("JSON", "JSON failed to parse" + e.getMessage());
         }
+    }
+
+    private void doDisplay(boolean error) throws JSONException {
+        txtTitle.setText("");
+        txtDesc.setText("");
+        String placeholder = "http://via.placeholder.com/350x150";
+
+        if (!error) {
+            String title = j.getJSONObject(c).getString("title");
+            if (title != null)
+                txtTitle.setText(title);
+            String desc = j.getJSONObject(c).getString("description");
+            if (desc != null)
+                txtDesc.setText(desc);
+            String image = j.getJSONObject(c).getString("urlToImage");
+            if (image != null)
+                Glide.with(this).load(image).into(img);
+            else
+                Glide.with(this).load(placeholder).into(img);
+        }
+    }
+
+    private void doJson() {
+        String choice = sharedPref.getString("cat_or_source", "");
+        String salt = "country=gb&";
+
+        Log.e("meme", "" + sharedPref.getString("source", ""));
+
+        if (choice.equals("source"))
+            salt = "sources=" +
+                    sharedPref.getString("source", "") + "&";
+        else if (choice.equals("category"))
+            salt += "category=" +
+                    sharedPref.getString("cat", "") + "&";
+
+        c = 0;
+
+        Log.e("meme", "" + salt);
+        Log.e("meme", "" + "https://newsapi.org/v2/top-headlines?" + salt + "apiKey=088fb1a3c9e3440db5b65f2c48c3f705");
+
+        r = new HttpRequest();
+        r.execute("https://newsapi.org/v2/top-headlines?" + salt + "apiKey=088fb1a3c9e3440db5b65f2c48c3f705");
+
+        txtTitle.setText(R.string.loadingText);
+        txtDesc.setText(R.string.loadingDesc);
     }
 
     void more() {
@@ -215,7 +255,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
 
         JSONArray getResultAsJSON() throws JSONException {
-            return fi ? new JSONObject(re).getJSONArray("articles") : null;
+            if (fi && re != null) {
+                JSONObject b = new JSONObject(re);
+
+                if (b.getString("status").equals("ok"))
+                    return b.getJSONArray("articles");
+
+            }
+            return null;
         }
 
         @Override

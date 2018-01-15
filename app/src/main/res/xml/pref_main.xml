@@ -13,6 +13,13 @@
         android:entries="@array/pref_cat"
         android:entryValues="@array/pref_cat_val"
         android:key="cat"
-        android:summary="Choose which category you want to see"
+        android:summary="Choose which category will be displayed"
         android:title="@string/cat" />
+    <ListPreference
+        android:defaultValue="@string/default_source"
+        android:entries="@array/pref_source"
+        android:entryValues="@array/pref_source_val"
+        android:key="source"
+        android:summary="Choose which source will be displayed"
+        android:title="Choose Source" />
 </PreferenceScreen>

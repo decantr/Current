@@ -19,6 +19,8 @@
     <string name="title_activity_preferences">Preferences</string>
     <string name="cat">Choose Category</string>
     <string name="defaultchoice">source</string>
-    <string name="default_cat">category=technology&amp;</string>
-    <string name="default_source">source=bbc-news&amp;</string>
+    <string name="default_cat">technology</string>
+    <string name="default_source">bbc-news</string>
+    <string name="feed">Feed</string>
+    <string name="action_refresh">Refresh</string>
 </resources>

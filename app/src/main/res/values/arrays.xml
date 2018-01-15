@@ -19,13 +19,13 @@
         <item>Technology</item>
     </string-array>
     <string-array name="pref_cat_val">
-        <item>category=business&amp;</item>
-        <item>category=entertainment&amp;</item>
-        <item>category=general&amp;</item>
-        <item>category=health&amp;</item>
-        <item>category=science&amp;</item>
-        <item>category=sports&amp;</item>
-        <item>category=technology&amp;</item>
+        <item>business</item>
+        <item>entertainment</item>
+        <item>general</item>
+        <item>health</item>
+        <item>science</item>
+        <item>sports</item>
+        <item>technology</item>
     </string-array>
 
     <string-array name="pref_source">
@@ -35,9 +35,9 @@
         <item>The Lad Bible</item>
     </string-array>
     <string-array name="pref_source_val">
-        <item>source=bbc-news&amp;</item>
-        <item>source=ars-technica&amp;</item>
-        <item>source=reuters&amp;</item>
-        <item>source=the-lad-bible&amp;</item>
+        <item>bbc-news</item>
+        <item>ars-technica</item>
+        <item>reuters</item>
+        <item>the-lad-bible</item>
     </string-array>
 </resources>
