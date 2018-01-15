@@ -14,7 +14,7 @@ public class DBUtil {
 
     public DBUtil(Context c) {
         DBHandler db = new DBHandler(c);
-        this.main = db.getWritableDatabase();
+        main = db.getWritableDatabase();
         this.c = c;
     }
 
@@ -31,6 +31,7 @@ public class DBUtil {
                     new String[]{"source_name, title, description, url, image"},
                     null, null,
                     null, null, null);
+            cur.close();
         }
         catch (SQLException e) {
             e.printStackTrace();
@@ -48,7 +49,7 @@ public class DBUtil {
         return articles;
     }
 
-    public void saveArticle(String n, String t, String d, String u, String i){
+    void saveArticle(String n, String t, String d, String u, String i){
         ContentValues a = new ContentValues();
 
         String[] h = {"source_name", "title", "description", "url", "image"};
@@ -57,6 +58,6 @@ public class DBUtil {
         for (int j = 0; j < 5; j++)
             a.put(h[j], c[j]);
 
-        this.main.insert(DBHandler.getName(), null, a);
+        main.insert(DBHandler.getName(), null, a);
     }
 }

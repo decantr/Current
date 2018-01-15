@@ -47,6 +47,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private int c;
     private JSONArray j;
     private ConstraintLayout cl;
+    private DBUtil db;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -83,6 +84,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         btnPrev.setOnClickListener(this);
         cl.setOnClickListener(this);
         txtDesc.setMovementMethod(new ScrollingMovementMethod());
+        db = new DBUtil (this);
 
         req();
     }
@@ -216,7 +218,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         if (j != null) {
             try {
                 JSONObject a = j.getJSONObject(c);
-                DBUtil.saveArticle(a.getJSONObject("source").getString("name"),
+                db.saveArticle(
+                        a.getJSONObject("source").getString("name"),
                         a.getString("title"),
                         a.getString("description"),
                         a.getString("url"),
@@ -224,11 +227,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 );
                 return true;
             } catch (Exception e) {
+                Log.e("meme", e.getMessage());
                 return false;
             }
         } else return false;
     }
-    
+
     void more() {
         try {
             startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(j.getJSONObject(c).getString("url"))));

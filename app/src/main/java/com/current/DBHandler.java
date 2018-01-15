@@ -6,7 +6,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 public class DBHandler extends SQLiteOpenHelper {
 
-    private static final String DB_NAME = "MAIN";
+    private static final String DB_NAME = "main";
     private static final int DB_VERSION = 1;
 
     DBHandler(Context c) {
@@ -14,7 +14,7 @@ public class DBHandler extends SQLiteOpenHelper {
     }
 
     static String getName() {
-        return DB_NAME;
+        return "main";
     }
 
     @Override
