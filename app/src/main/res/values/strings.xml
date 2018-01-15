@@ -13,6 +13,6 @@
     <string name="placeholderTitle">Title</string>
     <string name="title">Title</string>
     <string name="loadingDesc">Loading JSON</string>
-    <string name="tapanywhere">Tap anywhere to read more.</string>
+    <string name="tapanywhere">Tap to read more</string>
     <string name="like">Like Article</string>
 </resources>
