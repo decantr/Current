@@ -10,7 +10,7 @@ import java.util.ArrayList;
 
 class DBUtil {
     SQLiteDatabase main;
-    Context c;
+    private Context c;
 
     /*
         creates our new db

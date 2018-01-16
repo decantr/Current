@@ -10,8 +10,6 @@ import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.text.method.ScrollingMovementMethod;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -36,81 +34,86 @@ import java.net.URL;
 
 public class MainActivity extends AppCompatActivity {
 
-    private SharedPreferences sharedPref;
-    private Button btnNext, btnPrev;
-    private ImageButton btnLike;
-    private ImageView img;
-    private TextView txtTitle, txtDesc, txtMore;
-    private ProgressBar barPage;
-    private HttpRequest r;
+    //    vars for class
     private int c;
     private JSONArray j;
-    private ConstraintLayout cl;
     private DBUtil db;
-
     private JSONObject curDisplay;
+    private SharedPreferences sharedPref;
+    private HttpRequest r;
+
+    //    ui elements
+    private Button btnNext, btnPrev;
+    private TextView txtTitle, txtDesc, txtMore;
+    private ProgressBar barPage;
+    private ImageView img;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 //        boiler plate
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        PreferenceManager.setDefaultValues(this, R.xml.pref_main, false);
-        sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+        super.onCreate( savedInstanceState );
+        setContentView( R.layout.activity_main );
+        Toolbar toolbar = findViewById( R.id.toolbar );
+        setSupportActionBar( toolbar );
+        PreferenceManager.setDefaultValues( this, R.xml.pref_main, false );
+        sharedPref = PreferenceManager.getDefaultSharedPreferences( this );
 
 //        database
-        db = new DBUtil(this);
+        db = new DBUtil( this );
 
 //        buttons
-        btnNext = this.findViewById(R.id.btnNext);
-        btnNext.setOnClickListener(new View.OnClickListener() {
-            @Override public void onClick(View view) {
-                loop(true);
+        btnNext = this.findViewById( R.id.btnNext );
+        btnNext.setOnClickListener( new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                loop( true );
                 doDisplay();
             }
-        });
-        btnPrev = this.findViewById(R.id.btnPrev);
-        btnPrev.setOnClickListener(new View.OnClickListener() {
-            @Override public void onClick(View view) {
-                loop(false);
+        } );
+        btnPrev = this.findViewById( R.id.btnPrev );
+        btnPrev.setOnClickListener( new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                loop( false );
                 doDisplay();
             }
-        });
-        btnLike = this.findViewById(R.id.btnLike);
-        btnLike.setOnClickListener(new View.OnClickListener() {
-            @Override public void onClick(View view) {
+        } );
+        ImageButton btnLike = this.findViewById( R.id.btnLike );
+        btnLike.setOnClickListener( new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
                 int rtn;
-                if (save()) {
+                if ( save() ) {
                     rtn = R.string.saved;
                 } else rtn = R.string.nosaved;
-                Snackbar.make(view, rtn, Snackbar.LENGTH_SHORT)
-                        .setAction("Action", null).show();
+                Snackbar.make( view, rtn, Snackbar.LENGTH_SHORT )
+                        .setAction( "Action", null ).show();
             }
-        });
+        } );
 
 //        clickable body
-        cl = this.findViewById(R.id.cl);
-        cl.setOnClickListener(new View.OnClickListener() {
-            @Override public void onClick(View view) {
+        ConstraintLayout cl = this.findViewById( R.id.cl );
+        cl.setOnClickListener( new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
                 try {
-                    startActivity(new Intent(Intent.ACTION_VIEW,
-                            Uri.parse(curDisplay.getString("url"))));
-                } catch (Exception e) {
-                    toast("No URL for this article");
+                    startActivity( new Intent( Intent.ACTION_VIEW,
+                            Uri.parse( curDisplay.getString( "url" ) ) ) );
+                } catch ( Exception e ) {
+                    toast( "No URL for this article" );
                 }
             }
-        });
+        } );
 
 //        text views
-        txtTitle = this.findViewById(R.id.txtTitle);
-        txtDesc = this.findViewById(R.id.txtDesc);
-        txtMore = this.findViewById(R.id.txtMore);
+        txtTitle = this.findViewById( R.id.txtTitle );
+        txtDesc = this.findViewById( R.id.txtDesc );
+        txtMore = this.findViewById( R.id.txtMore );
 //        paging bar
-        barPage = this.findViewById(R.id.barPage);
+        barPage = this.findViewById( R.id.barPage );
 //        image view
-        img = this.findViewById(R.id.img);
+        img = this.findViewById( R.id.img );
 
 //        request json
         req();
@@ -123,33 +126,32 @@ public class MainActivity extends AppCompatActivity {
     */
     public void loop(boolean t) {
 
-        if (j != null) {
+        if ( t && c != j.length() - 1 ) c++;
+        else if ( c != 0 ) c--;
 
-            if (t && c != j.length() - 1) c++;
-            else if (c != 0) c--;
-
-            btnSwtch();
-        }
-
+        btnSwtch();
     }
 
     /*
         turn off the correct button when we reach max or hit zero
     */
     private void btnSwtch() {
-        btnPrev.setEnabled(true);
-        btnPrev.setEnabled(true);
-        if (c == 0)
-            btnPrev.setEnabled(false);
-        if (c == j.length() - 1 || j.length() == 1)
-            btnNext.setEnabled(false);
+
+        btnPrev.setEnabled( true );
+        btnPrev.setEnabled( true );
+
+        if ( c == 0 )
+            btnPrev.setEnabled( false );
+        if ( c == j.length() - 1 )
+            btnNext.setEnabled( false );
+
     }
 
     /*
         helper method to display the text passed in
     */
     void toast(String t) {
-        Toast.makeText(this, t, Toast.LENGTH_SHORT).show();
+        Toast.makeText( this, t, Toast.LENGTH_SHORT ).show();
     }
 
     /*
@@ -160,19 +162,19 @@ public class MainActivity extends AppCompatActivity {
     */
     public void req() {
 
-        if (r == null) doJson();
+        if ( r == null ) doJson();
 
         else try {
             j = r.getResultAsJSON();
 
-            if (j == null) {
-                toast("Error In Request!");
+            if ( j == null ) {
+                toast( "Error In Request!" );
                 return;
             }
 
             doDisplay();
 
-        } catch (Exception ignored) {
+        } catch ( Exception ignored ) {
         }
 
     }
@@ -193,34 +195,35 @@ public class MainActivity extends AppCompatActivity {
         int max = 1;
 
         try {
-            curDisplay = j.getJSONObject(c);
+            curDisplay = j.getJSONObject( c );
 
-            if (curDisplay.getString("title") != null)
-                title = curDisplay.getString("title");
+            if ( curDisplay.getString( "title" ) != null )
+                title = curDisplay.getString( "title" );
 
-            if (curDisplay.getString("description") != null)
-                desc = curDisplay.getString("description");
+            if ( curDisplay.getString( "description" ) != null )
+                desc = curDisplay.getString( "description" );
 
-            if (curDisplay.getString("url") != null)
+            if ( curDisplay.getString( "url" ) != null )
                 more = "Tap to read more";
 
-            if (curDisplay.getString("urlToImage") != null)
-                image = curDisplay.getString("urlToImage");
+            if ( curDisplay.getString( "urlToImage" ) != null )
+                image = curDisplay.getString( "urlToImage" );
 
-            if (j.length() > 1)
+            if ( j.length() > 1 )
                 max = j.length() - 1;
 
-        } catch (Exception ignored) {
+        } catch ( Exception ignored ) {
         }
 
-        barPage.setMax(max);
-        barPage.setProgress(c);
+        barPage.setMax( max );
+        barPage.setProgress( c );
 
-        txtTitle.setText(title);
-        txtDesc.setText(desc);
-        txtMore.setText(more);
+        txtTitle.setText( title );
+        txtDesc.setText( desc );
+        txtMore.setText( more );
 
-        Glide.with(this).load(image).into(img);
+        Glide.with( this ).load( image ).into( img );
+
     }
 
     /*
@@ -230,39 +233,40 @@ public class MainActivity extends AppCompatActivity {
         salt indicates what we will be adding to the request url
     */
     private void doJson() {
-        String choice = sharedPref.getString("cat_or_source", "");
+        String choice = sharedPref.getString( "cat_or_source", "" );
         String salt = "country=gb&";
 
-        if (choice.equals("source"))
+        if ( choice.equals( "source" ) )
             salt = "sources=" +
-                    sharedPref.getString("source", "") + "&";
-        else if (choice.equals("category"))
+                   sharedPref.getString( "source", "" ) + "&";
+        else if ( choice.equals( "category" ) )
             salt += "category=" +
-                    sharedPref.getString("cat", "") + "&";
+                    sharedPref.getString( "cat", "" ) + "&";
 
         c = 0;
 
         r = new HttpRequest();
-        r.execute("https://newsapi.org/v2/top-headlines?" + salt + "apiKey=088fb1a3c9e3440db5b65f2c48c3f705");
+        r.execute( "https://newsapi.org/v2/top-headlines?" + salt
+                   + "apiKey=088fb1a3c9e3440db5b65f2c48c3f705" );
 
-        txtTitle.setText(R.string.loadingText);
-        txtDesc.setText(R.string.loadingDesc);
+        txtTitle.setText( R.string.loadingText );
+        txtDesc.setText( R.string.loadingDesc );
     }
 
     /*
         handles saving current article to the db
     */
     boolean save() {
-        if (j != null) {
+        if ( j != null ) {
             try {
                 return db.saveArticle(
-                        curDisplay.getJSONObject("source").getString("name"),
-                        curDisplay.getString("title"),
-                        curDisplay.getString("description"),
-                        curDisplay.getString("url"),
-                        curDisplay.getString("urlToImage")
+                        curDisplay.getJSONObject( "source" ).getString( "name" ),
+                        curDisplay.getString( "title" ),
+                        curDisplay.getString( "description" ),
+                        curDisplay.getString( "url" ),
+                        curDisplay.getString( "urlToImage" )
                 ) > 0;
-            } catch (Exception e) {
+            } catch ( Exception e ) {
                 return false;
             }
         } else return false;
@@ -275,18 +279,19 @@ public class MainActivity extends AppCompatActivity {
     boolean delete() {
 
         try {
-            if (db.deleteArticle(curDisplay.getString("description")) == 1)
+            if ( db.deleteArticle( curDisplay.getString( "description" ) ) == 1 )
                 return true;
-        } catch (Exception ignored) {
+        } catch ( Exception ignored ) {
         }
 
         return false;
+
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
+        getMenuInflater().inflate( R.menu.menu_main, menu );
         return true;
     }
 
@@ -298,23 +303,23 @@ public class MainActivity extends AppCompatActivity {
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            startActivity(new Intent(this, SettingsActivity.class));
-        } else if (id == R.id.action_feed) {
-            startActivity(new Intent(this, Feed.class));
-        } else if (id == R.id.action_refresh) {
+        if ( id == R.id.action_settings ) {
+            startActivity( new Intent( this, SettingsActivity.class ) );
+        } else if ( id == R.id.action_feed ) {
+            startActivity( new Intent( this, Feed.class ) );
+        } else if ( id == R.id.action_refresh ) {
             r = null;
             req();
         }
 
-        return super.onOptionsItemSelected(item);
+        return super.onOptionsItemSelected( item );
     }
 
     /*
         HttpRequest to handle the async http get
         this class is inside our main so i can easlily callback the req method
     */
-    public class HttpRequest extends AsyncTask<String, Void, Void> {
+    public class HttpRequest extends AsyncTask <String, Void, Void> {
 
         private String re;
         private boolean fi;
@@ -331,8 +336,8 @@ public class MainActivity extends AppCompatActivity {
 
                 try {
                     t = in.readLine();
-                    r.append(t);
-                } catch (IOException ignored) {
+                    r.append( t );
+                } catch ( IOException ignored ) {
                 }
 
             } while (t != null);
@@ -352,14 +357,14 @@ public class MainActivity extends AppCompatActivity {
 
             try {
 
-                c = (HttpURLConnection) new URL(w).openConnection();
-                is = new InputStreamReader(c.getInputStream(), "UTF-8");
-                in = new BufferedReader(is);
-                readResponse(in);
+                c = (HttpURLConnection) new URL( w ).openConnection();
+                is = new InputStreamReader( c.getInputStream(), "UTF-8" );
+                in = new BufferedReader( is );
+                readResponse( in );
 
-            } catch (IOException ignored) {
+            } catch ( IOException ignored ) {
             } finally {
-                c.disconnect();
+                if (c != null) c.disconnect();
             }
 
         }
@@ -369,12 +374,12 @@ public class MainActivity extends AppCompatActivity {
         */
         JSONArray getResultAsJSON() throws JSONException {
 
-            if (fi && re != null) {
+            if ( fi && re != null ) {
 
-                JSONObject b = new JSONObject(re);
+                JSONObject b = new JSONObject( re );
 
-                if (b.getString("status").equals("ok"))
-                    return b.getJSONArray("articles");
+                if ( b.getString( "status" ).equals( "ok" ) )
+                    return b.getJSONArray( "articles" );
 
             }
             return null;
@@ -384,14 +389,13 @@ public class MainActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(Void result) {
             fi = true;
-            Log.d("Output", "" + re);
             req();
         }
 
         @Override
         protected Void doInBackground(String... p) {
             fi = false;
-            sendPostRequest(p[0]);
+            sendPostRequest( p[0] );
             return null;
         }
     }
