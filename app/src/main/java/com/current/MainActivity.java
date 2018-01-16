@@ -1,7 +1,10 @@
 package com.current;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -10,6 +13,7 @@ import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -50,7 +54,7 @@ public class MainActivity extends AppCompatActivity {
 
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate( Bundle savedInstanceState ) {
 //        boiler plate
         super.onCreate( savedInstanceState );
         setContentView( R.layout.activity_main );
@@ -66,7 +70,7 @@ public class MainActivity extends AppCompatActivity {
         btnNext = this.findViewById( R.id.btnNext );
         btnNext.setOnClickListener( new View.OnClickListener() {
             @Override
-            public void onClick(View view) {
+            public void onClick( View view ) {
                 loop( true );
                 doDisplay();
             }
@@ -74,7 +78,7 @@ public class MainActivity extends AppCompatActivity {
         btnPrev = this.findViewById( R.id.btnPrev );
         btnPrev.setOnClickListener( new View.OnClickListener() {
             @Override
-            public void onClick(View view) {
+            public void onClick( View view ) {
                 loop( false );
                 doDisplay();
             }
@@ -82,7 +86,7 @@ public class MainActivity extends AppCompatActivity {
         ImageButton btnLike = this.findViewById( R.id.btnLike );
         btnLike.setOnClickListener( new View.OnClickListener() {
             @Override
-            public void onClick(View view) {
+            public void onClick( View view ) {
                 int rtn;
                 if ( save() ) {
                     rtn = R.string.saved;
@@ -96,10 +100,11 @@ public class MainActivity extends AppCompatActivity {
         ConstraintLayout cl = this.findViewById( R.id.cl );
         cl.setOnClickListener( new View.OnClickListener() {
             @Override
-            public void onClick(View view) {
+            public void onClick( View view ) {
                 try {
                     startActivity( new Intent( Intent.ACTION_VIEW,
-                            Uri.parse( curDisplay.getString( "url" ) ) ) );
+                                               Uri.parse( curDisplay.getString( "url" ) )
+                    ) );
                 } catch ( Exception e ) {
                     toast( "No URL for this article" );
                 }
@@ -115,8 +120,17 @@ public class MainActivity extends AppCompatActivity {
 //        image view
         img = this.findViewById( R.id.img );
 
-//        request json
+//        handle ui
+        main();
+//        get json
         req();
+    }
+
+    private void main() {
+
+        loop( false );
+        doDisplay();
+
     }
 
     /*
@@ -124,7 +138,7 @@ public class MainActivity extends AppCompatActivity {
         and the amount of articles we got back from the api
         @t indicates where we want to increase or decrease the counter
     */
-    public void loop(boolean t) {
+    public void loop( boolean t ) {
 
         if ( t && c != j.length() - 1 ) c++;
         else if ( c != 0 ) c--;
@@ -138,11 +152,11 @@ public class MainActivity extends AppCompatActivity {
     private void btnSwtch() {
 
         btnPrev.setEnabled( true );
-        btnPrev.setEnabled( true );
+        btnNext.setEnabled( true );
 
         if ( c == 0 )
             btnPrev.setEnabled( false );
-        if ( c == j.length() - 1 )
+        if ( j == null || c == j.length() - 1 )
             btnNext.setEnabled( false );
 
     }
@@ -150,7 +164,7 @@ public class MainActivity extends AppCompatActivity {
     /*
         helper method to display the text passed in
     */
-    void toast(String t) {
+    void toast( String t ) {
         Toast.makeText( this, t, Toast.LENGTH_SHORT ).show();
     }
 
@@ -172,7 +186,7 @@ public class MainActivity extends AppCompatActivity {
                 return;
             }
 
-            doDisplay();
+            main();
 
         } catch ( Exception ignored ) {
         }
@@ -190,7 +204,7 @@ public class MainActivity extends AppCompatActivity {
 
         String title = "";
         String desc = "";
-        String image = "http://via.placeholder.com/350x150";
+        String image = "";
         String more = "";
         int max = 1;
 
@@ -226,6 +240,12 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    public boolean networkUp() {
+        NetworkInfo info = ((ConnectivityManager) this
+                .getSystemService( Context.CONNECTIVITY_SERVICE )).getActiveNetworkInfo();
+        return !(info == null || !info.isConnected());
+    }
+
     /*
         handle our json request
         choice indicates whether we are asking the api for categories or source
@@ -233,24 +253,30 @@ public class MainActivity extends AppCompatActivity {
         salt indicates what we will be adding to the request url
     */
     private void doJson() {
-        String choice = sharedPref.getString( "cat_or_source", "" );
-        String salt = "country=gb&";
 
-        if ( choice.equals( "source" ) )
-            salt = "sources=" +
-                   sharedPref.getString( "source", "" ) + "&";
-        else if ( choice.equals( "category" ) )
-            salt += "category=" +
-                    sharedPref.getString( "cat", "" ) + "&";
+        if (networkUp()) {
+            String choice = sharedPref.getString( "cat_or_source", "" );
+            String salt = "country=gb&";
 
-        c = 0;
+            if ( choice.equals( "source" ) )
+                salt = "sources=" +
+                       sharedPref.getString( "source", "" ) + "&";
+            else if ( choice.equals( "category" ) )
+                salt += "category=" +
+                        sharedPref.getString( "cat", "" ) + "&";
 
-        r = new HttpRequest();
-        r.execute( "https://newsapi.org/v2/top-headlines?" + salt
-                   + "apiKey=088fb1a3c9e3440db5b65f2c48c3f705" );
+            c = 0;
 
-        txtTitle.setText( R.string.loadingText );
-        txtDesc.setText( R.string.loadingDesc );
+            r = new HttpRequest();
+            r.execute( "https://newsapi.org/v2/top-headlines?" + salt
+                       + "apiKey=088fb1a3c9e3440db5b65f2c48c3f705" );
+
+            txtTitle.setText( R.string.loadingText );
+            txtDesc.setText( R.string.loadingDesc );
+        } else {
+            toast( "You have no internet!" );
+        }
+
     }
 
     /*
@@ -289,14 +315,14 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
+    public boolean onCreateOptionsMenu( Menu menu ) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate( R.menu.menu_main, menu );
         return true;
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
+    public boolean onOptionsItemSelected( MenuItem item ) {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
@@ -327,7 +353,7 @@ public class MainActivity extends AppCompatActivity {
         /*
             read the response in
         */
-        private void readResponse(BufferedReader in) {
+        private void readResponse( BufferedReader in ) {
 
             String t = "";
             StringBuilder r = new StringBuilder();
@@ -349,7 +375,7 @@ public class MainActivity extends AppCompatActivity {
         /*
             send our http get request
         */
-        void sendPostRequest(String w) {
+        void sendPostRequest( String w ) {
 
             HttpURLConnection c = null;
             InputStreamReader is;
@@ -364,7 +390,7 @@ public class MainActivity extends AppCompatActivity {
 
             } catch ( IOException ignored ) {
             } finally {
-                if (c != null) c.disconnect();
+                if ( c != null ) c.disconnect();
             }
 
         }
@@ -387,13 +413,13 @@ public class MainActivity extends AppCompatActivity {
         }
 
         @Override
-        protected void onPostExecute(Void result) {
+        protected void onPostExecute( Void result ) {
             fi = true;
             req();
         }
 
         @Override
-        protected Void doInBackground(String... p) {
+        protected Void doInBackground( String... p ) {
             fi = false;
             sendPostRequest( p[0] );
             return null;
