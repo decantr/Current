@@ -106,16 +106,17 @@ public class Feed extends AppCompatActivity {
 
     public void loop(boolean t) {
         if (t && c != a.size() - 1) c++;
-        else if (c != 0) c--;
+        else if (!t && c != 0) c--;
         btnSwtch();
     }
 
     private void btnSwtch() {
         btnPrev.setEnabled(true);
         btnPrev.setEnabled(true);
+        Log.e("meme", "btnSwtch: " + a.size());
         if (c == 0)
             btnPrev.setEnabled(false);
-        if (c == a.size() - 1 || a.size() == 1)
+        if (c == a.size() - 1)
             btnNext.setEnabled(false);
     }
 

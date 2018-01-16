@@ -27,6 +27,11 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="64dp" />
 
-    <include layout="@layout/bottom_bar_feed" />
+    <include
+        layout="@layout/bottom_bar_feed"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginBottom="32dp"
+        tools:layout_editor_absoluteY="30dp" />
 
 </android.support.design.widget.CoordinatorLayout>

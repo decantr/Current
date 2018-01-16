@@ -48,6 +48,8 @@ public class MainActivity extends AppCompatActivity {
     private ConstraintLayout cl;
     private DBUtil db;
 
+    private JSONObject curDisplay;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 //        boiler plate
@@ -76,7 +78,7 @@ public class MainActivity extends AppCompatActivity {
                 doDisplay();
             }
         });
-        btnLike = this.findViewById(R.id.btnDelete);
+        btnLike = this.findViewById(R.id.btnLike);
         btnLike.setOnClickListener(new View.OnClickListener() {
             @Override public void onClick(View view) {
                 int rtn;
@@ -94,7 +96,7 @@ public class MainActivity extends AppCompatActivity {
             @Override public void onClick(View view) {
                 try {
                     startActivity(new Intent(Intent.ACTION_VIEW,
-                            Uri.parse(j.getJSONObject(c).getString("url"))));
+                            Uri.parse(curDisplay.getString("url"))));
                 } catch (Exception e) {
                     toast("No URL for this article");
                 }
@@ -114,15 +116,26 @@ public class MainActivity extends AppCompatActivity {
         req();
     }
 
+    /*
+        ensure that c, our article counter, is always between zero
+        and the amount of articles we got back from the api
+        @t indicates where we want to increase or decrease the counter
+    */
     public void loop(boolean t) {
+
         if (j != null) {
+
             if (t && c != j.length() - 1) c++;
             else if (c != 0) c--;
-            req();
+
             btnSwtch();
         }
+
     }
 
+    /*
+        turn off the correct button when we reach max or hit zero
+    */
     private void btnSwtch() {
         btnPrev.setEnabled(true);
         btnPrev.setEnabled(true);
@@ -132,10 +145,19 @@ public class MainActivity extends AppCompatActivity {
             btnNext.setEnabled(false);
     }
 
+    /*
+        helper method to display the text passed in
+    */
     void toast(String t) {
         Toast.makeText(this, t, Toast.LENGTH_SHORT).show();
     }
 
+    /*
+        if there isn't current a response loaded, then run doJson() which will get
+        request our json file, if there is then attempt to parse it,
+        if parsing fails reset the response and display and error
+        if parsing doesn't fail update the display
+    */
     public void req() {
 
         if (r == null) doJson();
@@ -145,7 +167,6 @@ public class MainActivity extends AppCompatActivity {
 
             if (j == null) {
                 toast("Error In Request!");
-                r = null;
                 return;
             }
 
@@ -156,6 +177,13 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    /*
+        handle displaying the article to the main page
+        first creates all default values then creates t inside
+        a try catch incase of failure.
+        if any values are returned as null from the API then they
+        are left blank.
+    */
     private void doDisplay() {
 
         String title = "";
@@ -164,25 +192,24 @@ public class MainActivity extends AppCompatActivity {
         String more = "";
         int max = 1;
 
-        JSONObject t;
-
         try {
-            t = j.getJSONObject(c);
+            curDisplay = j.getJSONObject(c);
 
-            if (t.getString("title") != null)
-                title = t.getString("title");
+            if (curDisplay.getString("title") != null)
+                title = curDisplay.getString("title");
 
-            if (t.getString("description") != null)
-                desc = t.getString("description");
+            if (curDisplay.getString("description") != null)
+                desc = curDisplay.getString("description");
 
-            if (t.getString("url") != null)
+            if (curDisplay.getString("url") != null)
                 more = "Tap to read more";
 
-            if (t.getString("urlToImage") != null)
-                image = t.getString("urlToImage");
+            if (curDisplay.getString("urlToImage") != null)
+                image = curDisplay.getString("urlToImage");
 
             if (j.length() > 1)
                 max = j.length() - 1;
+
         } catch (Exception ignored) {
         }
 
@@ -196,6 +223,12 @@ public class MainActivity extends AppCompatActivity {
         Glide.with(this).load(image).into(img);
     }
 
+    /*
+        handle our json request
+        choice indicates whether we are asking the api for categories or source
+            which we retrieve form the settings menu
+        salt indicates what we will be adding to the request url
+    */
     private void doJson() {
         String choice = sharedPref.getString("cat_or_source", "");
         String salt = "country=gb&";
@@ -216,21 +249,38 @@ public class MainActivity extends AppCompatActivity {
         txtDesc.setText(R.string.loadingDesc);
     }
 
+    /*
+        handles saving current article to the db
+    */
     boolean save() {
         if (j != null) {
             try {
-                JSONObject a = j.getJSONObject(c);
                 return db.saveArticle(
-                        a.getJSONObject("source").getString("name"),
-                        a.getString("title"),
-                        a.getString("description"),
-                        a.getString("url"),
-                        a.getString("urlToImage")
+                        curDisplay.getJSONObject("source").getString("name"),
+                        curDisplay.getString("title"),
+                        curDisplay.getString("description"),
+                        curDisplay.getString("url"),
+                        curDisplay.getString("urlToImage")
                 ) > 0;
             } catch (Exception e) {
                 return false;
             }
         } else return false;
+    }
+
+    /*
+        handles deleting the current article from the db
+            if it's saved
+    */
+    boolean delete() {
+
+        try {
+            if (db.deleteArticle(curDisplay.getString("description")) == 1)
+                return true;
+        } catch (Exception ignored) {
+        }
+
+        return false;
     }
 
     /*
