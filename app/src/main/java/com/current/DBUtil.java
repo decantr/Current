@@ -38,7 +38,6 @@ public class DBUtil {
         }
 
         while (cur.moveToNext()) {
-            Log.e("meme", "" + cur.getString(0));
             t = new String[5];
 
             for (int j = 0; j < 5; j++)

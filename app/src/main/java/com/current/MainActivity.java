@@ -131,9 +131,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         startActivity(in);
     }
 
-    public void loop(boolean a) {
+    public void loop(boolean t) {
         if (j != null) {
-            if (a)
+            if (t)
                 if (c != j.length() - 1) c++;
                 else toast("Last Story!");
             else if (c != 0) c--;
