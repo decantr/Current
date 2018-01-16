@@ -17,6 +17,8 @@
     <string name="like">Like Article</string>
     <string name="saved">Article saved!</string>
     <string name="nosaved">Article could not be saved!</string>
+    <string name="deleted">Article deleted!</string>
+    <string name="nodeleted">Article could not be deleted!</string>
     <string name="title_activity_preferences">Preferences</string>
     <string name="cat">Choose Category</string>
     <string name="defaultchoice">source</string>

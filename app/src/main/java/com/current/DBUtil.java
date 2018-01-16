@@ -3,6 +3,7 @@ package com.current;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.database.DatabaseUtils;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
@@ -20,8 +21,6 @@ public class DBUtil {
     }
 
     public ArrayList getArticles() {
-        int dbSize = (int) this.c.getDatabasePath(DBHandler.getName()).length();
-
         ArrayList<String[]> articles = new ArrayList<>();
 
         String[] t;
@@ -32,8 +31,7 @@ public class DBUtil {
                     new String[]{"source_name, title, description, url, image"},
                     null, null,
                     null, null, null);
-        }
-        catch (SQLException e) {
+        } catch (SQLException e) {
             e.printStackTrace();
         }
 
@@ -48,7 +46,8 @@ public class DBUtil {
         return articles;
     }
 
-    void saveArticle(String n, String t, String d, String u, String i){
+    int saveArticle(String n, String t, String d, String u, String i) {
+
         ContentValues a = new ContentValues();
 
         String[] h = {"source_name", "title", "description", "url", "image"};
@@ -57,6 +56,11 @@ public class DBUtil {
         for (int j = 0; j < 5; j++)
             a.put(h[j], c[j]);
 
-        main.insert(DBHandler.getName(), null, a);
+        return (int) main.insert(DBHandler.getName(), null, a);
+    }
+
+    int deleteArticle(String t) {
+            return main.delete("main", "title=?",
+                    new String[] { String.valueOf(t) });
     }
 }

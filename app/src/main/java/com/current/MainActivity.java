@@ -32,13 +32,13 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener {
+public class MainActivity extends AppCompatActivity {
 
-    SharedPreferences sharedPref;
+    private SharedPreferences sharedPref;
     private Button btnNext, btnPrev;
+    private ImageButton btnLike;
     private ImageView img;
     private TextView txtTitle, txtDesc, txtMore;
     private ProgressBar barPage;
@@ -50,18 +50,35 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+//        boiler plate
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         PreferenceManager.setDefaultValues(this, R.xml.pref_main, false);
-
         sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
 
-        ImageButton btnLike = findViewById(R.id.btnLike);
+//        database
+        db = new DBUtil(this);
+
+//        buttons
+        btnNext = this.findViewById(R.id.btnNext);
+        btnNext.setOnClickListener(new View.OnClickListener() {
+            @Override public void onClick(View view) {
+                loop(true);
+                doDisplay();
+            }
+        });
+        btnPrev = this.findViewById(R.id.btnPrev);
+        btnPrev.setOnClickListener(new View.OnClickListener() {
+            @Override public void onClick(View view) {
+                loop(false);
+                doDisplay();
+            }
+        });
+        btnLike = this.findViewById(R.id.btnDelete);
         btnLike.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
+            @Override public void onClick(View view) {
                 int rtn;
                 if (save()) {
                     rtn = R.string.saved;
@@ -71,78 +88,48 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
         });
 
-        btnNext = this.findViewById(R.id.btnNext);
-        btnPrev = this.findViewById(R.id.btnPrev);
+//        clickable body
+        cl = this.findViewById(R.id.cl);
+        cl.setOnClickListener(new View.OnClickListener() {
+            @Override public void onClick(View view) {
+                try {
+                    startActivity(new Intent(Intent.ACTION_VIEW,
+                            Uri.parse(j.getJSONObject(c).getString("url"))));
+                } catch (Exception e) {
+                    toast("No URL for this article");
+                }
+            }
+        });
+
+//        text views
         txtTitle = this.findViewById(R.id.txtTitle);
         txtDesc = this.findViewById(R.id.txtDesc);
         txtMore = this.findViewById(R.id.txtMore);
+//        paging bar
         barPage = this.findViewById(R.id.barPage);
+//        image view
         img = this.findViewById(R.id.img);
-        cl = this.findViewById(R.id.cl);
-        btnNext.setOnClickListener(this);
-        btnPrev.setOnClickListener(this);
-        cl.setOnClickListener(this);
-        txtDesc.setMovementMethod(new ScrollingMovementMethod());
-        db = new DBUtil (this);
 
+//        request json
         req();
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            opnPref();
-        } else if (id == R.id.action_feed) {
-            opnFeed();
-        } else if (id == R.id.action_refresh) {
-            r = null;
-            req();
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    public void onClick(View v) {
-        if (v == btnNext) loop(true);
-        else if (v == btnPrev) loop(false);
-        else if (v == cl) more();
-    }
-
-    public void opnPref() {
-        startActivity(new Intent(this, SettingsActivity.class));
-    }
-
-    public void opnFeed() {
-        Intent in = new Intent(this, Feed.class);
-        startActivity(in);
     }
 
     public void loop(boolean t) {
         if (j != null) {
-            if (t)
-                if (c != j.length() - 1) c++;
-                else toast("Last Story!");
+            if (t && c != j.length() - 1) c++;
             else if (c != 0) c--;
-            else toast("First Story!");
-            barPage.setMax(j.length() - 1);
-            barPage.setProgress(c);
             req();
-        } else
-            toast("Error in URL parsing");
+            btnSwtch();
+        }
+    }
+
+    private void btnSwtch() {
+        btnPrev.setEnabled(true);
+        btnPrev.setEnabled(true);
+        if (c == 0)
+            btnPrev.setEnabled(false);
+        if (c == j.length() - 1 || j.length() == 1)
+            btnNext.setEnabled(false);
     }
 
     void toast(String t) {
@@ -150,47 +137,63 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     public void req() {
+
         if (r == null) doJson();
+
         else try {
             j = r.getResultAsJSON();
 
             if (j == null) {
-                toast("error in request!");
-                doDisplay(true);
-            } else doDisplay(false);
+                toast("Error In Request!");
+                r = null;
+                return;
+            }
 
-        } catch (JSONException e) {
-            Log.e("JSON", "JSON failed to parse" + e.getMessage());
+            doDisplay();
+
+        } catch (Exception ignored) {
         }
+
     }
 
-    private void doDisplay(boolean error) throws JSONException {
+    private void doDisplay() {
 
         String title = "";
         String desc = "";
-        String image = "";
+        String image = "http://via.placeholder.com/350x150";
         String more = "";
+        int max = 1;
 
-        if (!error) {
-            JSONObject t = j.getJSONObject(c);
+        JSONObject t;
 
-            title = t.getString("title");
-            if (title == null) title = "";
+        try {
+            t = j.getJSONObject(c);
 
-            desc = t.getString("description");
-            if (desc == null) desc = "";
+            if (t.getString("title") != null)
+                title = t.getString("title");
 
-            image = t.getString("urlToImage");
-            if (image == null) image = "http://via.placeholder.com/350x150";
+            if (t.getString("description") != null)
+                desc = t.getString("description");
 
-            if (t.getString("url") == null) more = "";
+            if (t.getString("url") != null)
+                more = "Tap to read more";
+
+            if (t.getString("urlToImage") != null)
+                image = t.getString("urlToImage");
+
+            if (j.length() > 1)
+                max = j.length() - 1;
+        } catch (Exception ignored) {
         }
+
+        barPage.setMax(max);
+        barPage.setProgress(c);
 
         txtTitle.setText(title);
         txtDesc.setText(desc);
         txtMore.setText(more);
-        Glide.with(this).load(image).into(img);
 
+        Glide.with(this).load(image).into(img);
     }
 
     private void doJson() {
@@ -217,74 +220,98 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         if (j != null) {
             try {
                 JSONObject a = j.getJSONObject(c);
-                db.saveArticle(
+                return db.saveArticle(
                         a.getJSONObject("source").getString("name"),
                         a.getString("title"),
                         a.getString("description"),
                         a.getString("url"),
                         a.getString("urlToImage")
-                );
-                return true;
+                ) > 0;
             } catch (Exception e) {
-                Log.e("meme", e.getMessage());
                 return false;
             }
         } else return false;
     }
 
-    void more() {
-        try {
-            startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(j.getJSONObject(c).getString("url"))));
-        } catch (Exception e) {
-            toast("URL not loaded!");
+    /*
+        BOILERPLATE
+     */
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        //noinspection SimplifiableIfStatement
+        if (id == R.id.action_settings) {
+            startActivity(new Intent(this, SettingsActivity.class));
+        } else if (id == R.id.action_feed) {
+            startActivity(new Intent(this, Feed.class));
+        } else if (id == R.id.action_refresh) {
+            r = null;
+            req();
         }
+
+        return super.onOptionsItemSelected(item);
     }
 
     public class HttpRequest extends AsyncTask<String, Void, Void> {
-        public String re;
+
+        private String re;
         private boolean fi;
 
         private void readResponse(BufferedReader in) {
+
             String t = "";
             StringBuilder r = new StringBuilder();
 
             do {
+
                 try {
                     t = in.readLine();
+                    r.append(t);
                 } catch (IOException ignored) {
                 }
 
-                if (t != null) r.append(t);
             } while (t != null);
 
             re = r.toString();
+
         }
 
         void sendPostRequest(String w) {
-            URL l;
+
             HttpURLConnection c = null;
             InputStreamReader is;
             BufferedReader in;
 
             try {
-                l = new URL(w);
-            } catch (MalformedURLException e) {
-                return;
-            }
 
-            try {
-                c = (HttpURLConnection) l.openConnection();
+                c = (HttpURLConnection) new URL(w).openConnection();
                 is = new InputStreamReader(c.getInputStream(), "UTF-8");
                 in = new BufferedReader(is);
                 readResponse(in);
+
             } catch (IOException ignored) {
             } finally {
                 c.disconnect();
             }
+
         }
 
         JSONArray getResultAsJSON() throws JSONException {
+
             if (fi && re != null) {
+
                 JSONObject b = new JSONObject(re);
 
                 if (b.getString("status").equals("ok"))
@@ -292,6 +319,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
             }
             return null;
+
         }
 
         @Override

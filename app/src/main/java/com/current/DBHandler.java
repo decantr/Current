@@ -20,9 +20,8 @@ public class DBHandler extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         db.execSQL( "CREATE TABLE " + DB_NAME +
-                        "(id integer primary key autoincrement not null, " +
-                        "source_name text not null, " +
-                        "title text not null, " +
+                        "(source_name text not null, " +
+                        "title text primary key not null, " +
                         "description text, " +
                         "url text, " +
                         "image text);"
