@@ -5,6 +5,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 
 import java.util.ArrayList;
 
@@ -31,13 +32,13 @@ public class DBUtil {
                     new String[]{"source_name, title, description, url, image"},
                     null, null,
                     null, null, null);
-            cur.close();
         }
         catch (SQLException e) {
             e.printStackTrace();
         }
 
-        for (int i = 0; i < dbSize; i++) {
+        while (cur.moveToNext()) {
+            Log.e("meme", "" + cur.getString(0));
             t = new String[5];
 
             for (int j = 0; j < 5; j++)
@@ -45,7 +46,6 @@ public class DBUtil {
 
             articles.add(t);
         }
-
         return articles;
     }
 

@@ -24,4 +24,6 @@
     <string name="default_source">bbc-news</string>
     <string name="feed">Feed</string>
     <string name="action_refresh">Refresh</string>
+    <string name="title_activity_feed">Feed</string>
+    <string name="btnDelete">Delete</string>
 </resources>
