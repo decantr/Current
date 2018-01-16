@@ -283,10 +283,6 @@ public class MainActivity extends AppCompatActivity {
         return false;
     }
 
-    /*
-        BOILERPLATE
-     */
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -314,11 +310,18 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    /*
+        HttpRequest to handle the async http get
+        this class is inside our main so i can easlily callback the req method
+    */
     public class HttpRequest extends AsyncTask<String, Void, Void> {
 
         private String re;
         private boolean fi;
 
+        /*
+            read the response in
+        */
         private void readResponse(BufferedReader in) {
 
             String t = "";
@@ -338,6 +341,9 @@ public class MainActivity extends AppCompatActivity {
 
         }
 
+        /*
+            send our http get request
+        */
         void sendPostRequest(String w) {
 
             HttpURLConnection c = null;
@@ -358,6 +364,9 @@ public class MainActivity extends AppCompatActivity {
 
         }
 
+        /*
+            convert our response to a json array
+        */
         JSONArray getResultAsJSON() throws JSONException {
 
             if (fi && re != null) {

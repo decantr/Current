@@ -17,6 +17,10 @@ public class DBHandler extends SQLiteOpenHelper {
         return DB_NAME;
     }
 
+    /*
+        create the database
+        using title as pk as a dirty way to prevent duplicates
+    */
     @Override
     public void onCreate(SQLiteDatabase db) {
         db.execSQL( "CREATE TABLE " + DB_NAME +
